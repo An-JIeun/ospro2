@@ -101,8 +101,8 @@ void vehicle_loop(void *_vi)
 
 	struct vehicle_info *vi = _vi;
 
-	start = vi->start - 'A';
-	dest = vi->dest - 'A';
+	start = vi->start-'A';
+	dest = vi->dest='A';
 
 	vi->position.row = vi->position.col = -1;
 	vi->state = VEHICLE_STATUS_READY;
