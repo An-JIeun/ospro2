@@ -6,7 +6,8 @@
 #include "projects/crossroads/vehicle.h"
 #include "projects/crossroads/map.h"
 #include "projects/crossroads/ats.h"
-
+int vehicle_count;
+struct vehicle_info* vehicles = (struct vehicle_info *)vehicle_list;
 /* path. A:0 B:1 C:2 D:3 */
 const struct position vehicle_path[4][4][12] = {
 	/* from A */ {
@@ -56,6 +57,46 @@ static int is_position_outside(struct position pos)
 	return (pos.row == -1 || pos.col == -1);
 }
 
+/* 추가 함수 */
+// 자원할당 그래프 알고리즘을 활용하여 자원 점유 요청 시 
+// 사이클을 감지하여 deadlock 발생여부를 판단한 후 Recovery
+/*Deadlock Detection을 위한 자원할당 그래프*/
+bool RAG[20][20];
+
+/*Deadlock Detection 함수*/
+bool detect_cycle_unit(int v, bool visted[], bool rec_stack[]){
+	if(!visted[v]){
+		visted[v] = true;
+		rec_stack[v] = true;
+
+		for (int i = 0;i < vehicle_count;i++) {
+			if (RAG[v][i] & !visted[i] && detect_cycle_unit(i, visted, rec_stack)) {
+				return true;
+			}
+			else if (rec_stack[i]){
+				return true;
+			}
+		}
+	}
+	rec_stack[v] = false;
+	return false;
+}
+
+/* 중첩되는 Cycle 탐지 함수 */
+bool detect_cycle(){
+	bool visted[20];
+	bool rec_stack[20];
+
+	for (int i = 0;i < vehicle_count;i++) {
+		if (detect_cycle_unit(i, visted, rec_stack)){
+			return true;
+		}
+	}
+	return false;
+
+}
+
+
 /* return 0:termination, 1:success, -1:fail */
 static int try_move(int start, int dest, int step, struct vehicle_info *vi)
 {
@@ -87,11 +128,26 @@ static int try_move(int start, int dest, int step, struct vehicle_info *vi)
 	/* update position */
 	vi->position = pos_next;
 	
+	/* 자원할당 그래프 업데이트 */
+	for (int i = 0; i < vehicle_count; i++){
+		if (vehicles[i].position.row == pos_next.row && vehicles[i].position.col == pos_next.col){
+			RAG[vi - vehicles][i] = false;
+			if (detect_cycle()){
+				RAG[vi - vehicles][i] = true;
+				lock_release(&vi->map_locks[pos_next.row][pos_next.col]);
+				return -1; // Deadlock 발생
+			}
+		}
+	}
+
+
+
 	return 1;
 }
 
 void init_on_mainthread(int thread_cnt){
 	/* Called once before spawning threads */
+	vehicle_count = thread_cnt; // 전체 스레드 개수 저장
 }
 
 void vehicle_loop(void *_vi)
@@ -102,7 +158,7 @@ void vehicle_loop(void *_vi)
 	struct vehicle_info *vi = _vi;
 
 	start = vi->start-'A';
-	dest = vi->dest='A';
+	dest = vi->dest - 'A';
 
 	vi->position.row = vi->position.col = -1;
 	vi->state = VEHICLE_STATUS_READY;
@@ -115,6 +171,17 @@ void vehicle_loop(void *_vi)
 			step++;
 		}
 
+		/*Deadlock 발생 대처*/
+		if (res == -1)
+		{
+			lock_release(&vi->map_locks[vi->position.row][vi->position.col]);
+			step = 0;
+			vi->position.row = vi->position.col = -1;
+			vi->state = VEHICLE_STATUS_READY;
+			continue;
+		}
+		
+
 		/* termination condition. */ 
 		if (res == 0) {
 			break;
@@ -126,4 +193,10 @@ void vehicle_loop(void *_vi)
 
 	/* status transition must happen before sema_up */
 	vi->state = VEHICLE_STATUS_FINISHED;
+}
+
+
+void catch_cycle()
+{
+
 }

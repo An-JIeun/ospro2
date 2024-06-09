@@ -15,6 +15,7 @@
 #include "userprog/process.h"
 #endif
 
+
 /* Random value for struct thread's `magic' member.
    Used to detect stack overflow.  See the big comment at the top
    of thread.h for details. */
@@ -203,6 +204,9 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
+ /* vehicle 정보를 추가 */
+ vehicle_list[array_len] = aux;
+  array_len++;
   /* Add to run queue. */
   thread_unblock (t);
 

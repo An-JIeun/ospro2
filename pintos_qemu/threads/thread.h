@@ -14,6 +14,9 @@ enum thread_status
     THREAD_DYING        /* About to be destroyed. */
   };
 
+
+extern void* vehicle_list[20];
+extern int array_len = 0;
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
 typedef int tid_t;
