@@ -69,7 +69,7 @@ bool detect_cycle_unit(int v, bool visted[], bool rec_stack[]){
 		rec_stack[v] = true;
 
 		for (int i = 0;i < vehicle_count;i++) {
-			if (RAG[v][i] & !visted[i] && detect_cycle_unit(i, visted, rec_stack)) {
+			if (RAG[v][i] && !visted[i] && detect_cycle_unit(i, visted, rec_stack)) {
 				return true;
 			}
 			else if (rec_stack[i]){
