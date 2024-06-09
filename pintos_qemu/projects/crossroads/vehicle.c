@@ -57,13 +57,10 @@ static int is_position_outside(struct position pos)
 	return (pos.row == -1 || pos.col == -1);
 }
 
-/* 추가 함수 */
-// 자원할당 그래프 알고리즘을 활용하여 자원 점유 요청 시 
-// 사이클을 감지하여 deadlock 발생여부를 판단한 후 Recovery
-/*Deadlock Detection을 위한 자원할당 그래프*/
+/*additional infos*/
 bool RAG[20][20];
 
-/*Deadlock Detection 함수*/
+/*Deadlock Detection function*/
 bool detect_cycle_unit(int v, bool visted[], bool rec_stack[]){
 	if(!visted[v]){
 		visted[v] = true;
@@ -82,7 +79,7 @@ bool detect_cycle_unit(int v, bool visted[], bool rec_stack[]){
 	return false;
 }
 
-/* 중첩되는 Cycle 탐지 함수 */
+/* nested deteciton functions */
 bool detect_cycle(){
 	bool visted[20];
 	bool rec_stack[20];
@@ -147,7 +144,7 @@ static int try_move(int start, int dest, int step, struct vehicle_info *vi)
 
 void init_on_mainthread(int thread_cnt){
 	/* Called once before spawning threads */
-	vehicle_count = thread_cnt; // 전체 스레드 개수 저장
+	vehicle_count = thread_cnt; // theads length
 }
 
 void vehicle_loop(void *_vi)
