@@ -204,7 +204,7 @@ thread_create (const char *name, int priority,
   sf->eip = switch_entry;
   sf->ebp = 0;
 
- /* vehicle 정보를 추가 */
+ /* vehicle info adding*/
  vehicle_list[array_len] = aux;
   array_len++;
   /* Add to run queue. */
