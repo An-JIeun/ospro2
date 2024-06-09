@@ -6,7 +6,9 @@
 #include "projects/crossroads/vehicle.h"
 #include "projects/crossroads/map.h"
 #include "projects/crossroads/ats.h"
+#include "projects/crossroads/graph.h"
 int vehicle_count;
+
 struct vehicle_info* vehicles = (struct vehicle_info *)vehicle_list;
 /* path. A:0 B:1 C:2 D:3 */
 const struct position vehicle_path[4][4][12] = {
@@ -193,10 +195,4 @@ void vehicle_loop(void *_vi)
 
 	/* status transition must happen before sema_up */
 	vi->state = VEHICLE_STATUS_FINISHED;
-}
-
-
-void catch_cycle()
-{
-
 }
