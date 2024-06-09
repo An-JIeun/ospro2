@@ -17,5 +17,6 @@ struct vehicle_info {
 };
 
 void vehicle_loop(void *vi);
-
+void* vehicle_list[20];
+int array_len;
 #endif /* __PROJECTS_PROJECT2_VEHICLE_H__ */

@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include "projects/crossroads/graph.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -14,10 +15,8 @@ enum thread_status
     THREAD_DYING        /* About to be destroyed. */
   };
 
-/*vehicle info lists*/
-extern void* vehicle_list[20];
-extern int array_len = 0;
-
+void* vehicle_list[20];
+int array_len;
 
 /* Thread identifier type.
    You can redefine this to whatever type you like. */
