@@ -49,6 +49,7 @@ void map_draw(void)
 		printf("\n");
 	}
 	printf("unit step: %d\n", crossroads_step);
+	crossroads_step++;
 	gotoxy(0, 0);
 }
 
